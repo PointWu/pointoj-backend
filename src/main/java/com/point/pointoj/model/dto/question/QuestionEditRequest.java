@@ -33,7 +33,7 @@ public class QuestionEditRequest implements Serializable {
     /**
      * 标签列表
      */
-//    private List<String> tags;
+    private List<String> tags;
 
     /**
      * 题目答案

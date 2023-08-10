@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2023-08-09 20:54:47
 * @Entity com.point.pointoj.model.entity.question_submit
 */
-public interface question_submitMapper extends BaseMapper<QuestionSubmit> {
+public interface QuestionSubmitMapper extends BaseMapper<QuestionSubmit> {
 
 }
 
