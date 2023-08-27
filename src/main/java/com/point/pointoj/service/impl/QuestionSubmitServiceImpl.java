@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.point.pointoj.common.ErrorCode;
 import com.point.pointoj.constant.CommonConstant;
 import com.point.pointoj.exception.BusinessException;
+import com.point.pointoj.judge.JudgeService;
 import com.point.pointoj.mapper.QuestionSubmitMapper;
 import com.point.pointoj.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import com.point.pointoj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
@@ -22,14 +23,15 @@ import com.point.pointoj.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
- * @author point
  * @description 针对表【question_submit(题目提交)】的数据库操作Service实现
  * @createDate 2023-08-07 20:58:53
  */
@@ -42,6 +44,10 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
 
     @Resource
     private UserService userService;
+
+    @Resource
+    @Lazy
+    private JudgeService judgeService;
 
     /**
      * 提交题目
@@ -79,7 +85,12 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         if (!save){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据插入失败");
         }
-        return questionSubmit.getId();
+        Long questionSubmitId = questionSubmit.getId();
+        // 执行判题服务
+        CompletableFuture.runAsync(() -> {
+            judgeService.doJudge(questionSubmitId);
+        });
+        return questionSubmitId;
     }
 
 
@@ -138,8 +149,6 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         questionSubmitVOPage.setRecords(questionSubmitVOList);
         return questionSubmitVOPage;
     }
-
-
 }
 
 

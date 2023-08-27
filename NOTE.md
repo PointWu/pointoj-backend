@@ -1,73 +1,185 @@
+# pointoj-backend
+
+基于 Java SpringBoot 的项目初始模板，整合了常用框架和主流业务的示例代码。
 
 
-# 系统功能梳理
+## 🎨 文件夹
 
-
-- 题目模块
-  - 创建题目
-  - 删除题目
-  - 修改题目
-  - 搜索题目
-  - 在线做题
-
-
-- 判题信息枚举
-  - Accepted 成功
-  - Wrong Answer 答案错误
-  - Compile Error 编译错误
-  - Memory Limit Exceeded 超时
-  - Presentation Error 展示错误
-  - Output Limit Exceeded 输出溢出
-  - Waiting 等待中
-  - Dangerous Operation 危险操作
-  - Runtime Error 运行错误（用户程序问题）
-  - System Error 系统错误 （做系统人的问题）
-
-  
-## 判题机模块
-
-调用代码沙箱，把代码和输入交给代码沙箱去执行
-
-代码沙箱：只负责接受代码和输入，返回编译运行的结果。不负责判题
-
-完全解耦。大概流程如下 👇
-
-
-<img src="codeBox.png"  width="60%"/>
-
-代码沙箱接收和输出一组运行用例
-
-如果每个用例单独调用一次代码沙箱，会调用多次接口、需要多次网络传输
-程序要多次编译、记录程序的执行状态
+- sql/create_table.sql中 定义了数据库初始化建库建表语句
+- sql/post_es_mapping.json 帖子表在ES中的建表语句
+- aop: 全局权限校验、全局日志记录
+- common:万用的类，比如通用响应类
+- config: 用于接收application.yml中的参数，初始化一些客户端的配置类
+- constant: 定义常量
+- controller:接受请求
+- esdao:类似mybatis 的 mapper，用于操作ES
+- exception: 异常处理相关
+- job: 任务相关（定时任务、单次任务）
+- manager: 服务层（一般是定义一些公用的服务、对接第三方API等）
+- mapper：mybaits的数据访问层，用于操作数据库
+- model：数据模型、实体类、包装类、枚举值
+- service: 服务层、用于编写业务逻辑
+- utils: 工具类，各种各样的公用方法
+- wxmp: 公众号相关的包
+- test: 单元测试
+- MainApplication: 项目启动入口
+- Dockerfile: 用于构建Dcoker镜像
 
 
 
-- 示例代码沙箱
-- 远程代码沙箱
-- 第三方代码沙箱:调用网上现成的
+## 已实现 ✅
 
-### 工厂模式
+### 主流框架 & 特性
+****
+- Spring Boot 2.7.x（贼新）
+- Spring MVC
+- MyBatis + MyBatis Plus 数据访问（开启分页）
+- Spring Boot 调试工具和项目处理器
+- Spring AOP 切面编程
+- Spring Scheduler 定时任务
+- Spring 事务注解
 
-根据用户传入的字符串（沙箱类别），来生成对应的代码沙箱实现类
-此处使用静态工厂模式，实现比较简单
+### 数据存储
 
-如果代码沙箱示例不会出现线程安全问题、可复用。
+- MySQL 数据库
+- Redis 内存数据库
+- Elasticsearch 搜索引擎
+- 腾讯云 COS 对象存储
 
-## 代码沙箱增强 - 代理模式
+### 工具类
 
-在调用代码沙箱前，输出请求参数日志
-在调用代码沙箱后，输出响应结果日志
+- Easy Excel 表格处理
+- Hutool 工具库
+- Gson 解析库
+- Apache Commons Lang3 工具类
+- Lombok 注解
 
-使用代理模式，提供一个Proxy,增强代码沙箱能力
-解决了需要用户自己去调用多次
-- 实现被代理的接口
-- 通过构造函数接受一个被代理的接口实现类
-- 调用被代理的接口实现类，在调用前后增加对应的操作
+### 业务特性
+
+- Spring Session Redis 分布式登录
+- 全局请求响应拦截器（记录日志）
+- 全局异常处理器
+- 自定义错误码
+- 封装通用响应类
+- Swagger + Knife4j 接口文档
+- 自定义权限注解 + 全局校验
+- 全局跨域处理
+- 长整数丢失精度解决
+- 多环境配置
 
 
-<img src="ProxyCodeBox.jpg" width="60%"/>
+### 业务功能
+
+- 提供示例 SQL（用户、帖子、帖子点赞、帖子收藏表）
+- 用户登录、注册、注销、更新、检索、权限管理
+- 帖子创建、删除、编辑、更新、数据库检索、ES 灵活检索
+- 帖子点赞、取消点赞
+- 帖子收藏、取消收藏、检索已收藏帖子
+- 帖子全量同步 ES、增量同步 ES 定时任务
+- 支持微信开放平台登录
+- 支持微信公众号订阅、收发消息、设置菜单
+- 支持分业务的文件上传
+
+### 单元测试
+
+- JUnit5 单元测试
+- 示例单元测试类
+
+### 架构设计
+
+- 合理分层
 
 
 
 
+### MySQL 数据库
 
+1）修改 `application.yml` 的数据库配置为你自己的：
+
+```yml
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my_db
+    username: root
+    password: 123456
+```
+
+2）执行 `sql/create_table.sql` 中的数据库语句，自动创建库表
+
+3）启动项目，访问 `http://localhost:8121/api/doc.html` 即可打开接口文档，不需要写前端就能在线调试接口了~
+
+![](doc/swagger.png)
+
+### Redis 分布式登录
+
+1）修改 `application.yml` 的 Redis 配置为你自己的：
+
+```yml
+spring:
+  redis:
+    database: 1
+    host: localhost
+    port: 6379
+    timeout: 5000
+    password: 123456
+```
+
+2）修改 `application.yml` 中的 session 存储方式：
+
+```yml
+spring:
+  session:
+    store-type: redis
+```
+
+3）移除 `MainApplication` 类开头 `@SpringBootApplication` 注解内的 exclude 参数：
+
+修改前：
+
+```java
+@SpringBootApplication(exclude = {RedisAutoConfiguration.class})
+```
+
+修改后：
+
+
+```java
+@SpringBootApplication
+```
+
+### Elasticsearch 搜索引擎
+
+1）修改 `application.yml` 的 Elasticsearch 配置为你自己的：
+
+```yml
+spring:
+  elasticsearch:
+    uris: http://localhost:9200
+    username: root
+    password: 123456
+```
+
+2）复制 `sql/post_es_mapping.json` 文件中的内容，通过调用 Elasticsearch 的接口或者 Kibana Dev Tools 来创建索引（相当于数据库建表）
+
+```
+PUT post_v1
+{
+ 参数见 sql/post_es_mapping.json 文件
+}
+```
+
+这步不会操作的话需要补充下 Elasticsearch 的知识，或者自行百度一下~
+
+3）开启同步任务，将数据库的帖子同步到 Elasticsearch
+
+找到 job 目录下的 `FullSyncPostToEs` 和 `IncSyncPostToEs` 文件，取消掉 `@Component` 注解的注释，再次执行程序即可触发同步：
+
+```java
+// todo 取消注释开启任务
+//@Component
+```
+
+## 💊 说明
+
+- 仅用于个人学习

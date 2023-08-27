@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 @Service
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         implements QuestionService{
-
-
     @Resource
     private UserService userService;
 
